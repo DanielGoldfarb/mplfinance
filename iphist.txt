@@ -1,0 +1,292 @@
+# This allows multiple outputs from a single jupyter notebook cell:
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = "all"
+
+import pandas as pd
+pd.__version__  # for the record
+df = pd.read_csv('../data/SPY_20110701_20120630_Bollinger.csv',index_col=0,parse_dates=True)
+df.shape
+df.head(2)
+df.tail(2)
+#%matplotlib qt
+import mplfinance as mpf
+import numpy as np
+x = np.array([1,2,3])
+x
+type(x)
+tdf = df.iloc[0:24]
+mymarkers = ['$1$',None,'$2$',None,'$3$',None,'$4$',None,'$5$',None,
+             '$6$',None,'$7$',None,'$8$',None,'$9$',None,'D',
+             None,'<',None,'x',None]
+len(mymarkers)
+len(tdf)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers[0],markersize=45,color=color[0])
+mpf.plot(tdf,type='candle',addplot=ap)
+len(color)
+y = [0.99*y if ix%2 == 0 else np.nan for ix,y in enumerate(tdf['Low'].values) ]
+len(y)
+mks = [m  for m in mymarkers if m is not None]*2
+len(mks)
+ap = mpf.make_addplot(y,type='scatter',marker=mks,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+mymarkers = ['$11$',None,'$2$',None,'$3$',None,'$4$',None,'$5$',None,
+             '$6$',None,'$7$',None,'$8$',None,'$9$',None,'D',
+             None,'<',None,'x',None]
+len(mymarkers)
+len(tdf)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+mymarkers = ['$123$',None,'$2$',None,'$3$',None,'$4$',None,'$5$',None,
+             '$6$',None,'$7$',None,'$8$',None,'$9$',None,'D',
+             None,'<',None,'x',None]
+len(mymarkers)
+len(tdf)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+mymarkers = ['${123}',None,'$2$',None,'$3$',None,'$4$',None,'$5$',None,
+             '$6$',None,'$7$',None,'$8$',None,'$9$',None,'D',
+             None,'<',None,'x',None]
+len(mymarkers)
+len(tdf)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+mymarkers = ['${12}$',None,'$2$',None,'$3$',None,'$4$',None,'$5$',None,
+             '$6$',None,'$7$',None,'$8$',None,'$9$',None,'D',
+             None,'<',None,'x',None]
+len(mymarkers)
+len(tdf)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+mymarkers = ['${12}$',None,'$2.2$',None,'$3$',None,'$4$',None,'$5$',None,
+             '$6$',None,'$7$',None,'$8$',None,'$9$',None,'D',
+             None,'<',None,'x',None]
+len(mymarkers)
+len(tdf)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=45,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=90,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers[0],markersize=45,color=color[0])
+mpf.plot(tdf,type='candle',addplot=ap)
+color=['c','g','r','b','y']*5
+color=color[0:24]
+ap = mpf.make_addplot(0.99*tdf['Low'],type='scatter',marker=mymarkers,markersize=190,color=color)
+mpf.plot(tdf,type='candle',addplot=ap)
+import pandas as pd
+pd.date_range('1958-05-27',periods=30,freq='B')
+pd.date_range(end='1958-05-27',periods=30,freq='B')
+pd.date_range(end='1958-05-27',periods=30,freq='T')
+pd.date_range(end='1958-05-27',periods=30,freq='H')
+pd.date_range(end='1958-05-27',periods=30,freq='W-TUE')
+pd.date_range(end='1958-05-27',periods=30,freq='W-WED')
+ls
+ls examples/data
+df = pd.read_csv('examples/data/SPY_20110701_20120630_Bollinger.csv',index_col=0,parse_dates=True)
+df.head()
+df.index[[0,-1]]
+dates = pd.date_range(start='2011-07-01',end='2012-06-29',freq='B')
+dates.head()
+dates.to_series().head()
+df.index.to_series().head()
+df.index.to_series().head() - dates.to_series().head()
+df.index.to_series() - dates.to_series()
+ds = df.index.to_series() - dates.to_series()
+ds.describe()
+ds.T.count()
+ds.count()
+ds
+ds.value_counts()
+len(ds)
+ds.value_counts('NaT')
+ds.isnull
+ds.notnull()
+ds[ds.isnull()]
+ds.quartiles(0.9)
+ds.quartile(0.9)
+pd.DataFrame(ds.index.values)
+dsdf = pd.DataFrame(ds.index.values)
+dsdf.quartile(0.9)
+ds.quantile(0.9)
+ds.quantile(0.1)
+ds.quantile(0.99)
+ds.quantile(0.999)
+ds.quantile(0.9999)
+ds[ds.notnull()]
+all(ds[ds.notnull()])
+all(ds[ds.notnull()] == 0)
+ds[ds.notnull()] = pd.timedelta(days=0)
+ds[ds.notnull()] = pd.time_delta(days=0)
+ds[ds.notnull()] = pd.Timedelta(days=0)
+ds
+ds[ds.notnull()] == pd.Timedelta(days=0)
+all(ds[ds.notnull()] == pd.Timedelta(days=0))
+dir()
+%history ~0/1-~0/102 -g pd.read
+df.index.inferred_freq
+df.head()
+df.iloc[1:10].index.inferred_freq
+df.iloc[1:15].index.inferred_freq
+df.iloc[0:15].index.inferred_freq
+df.iloc[1:].index.inferred_freq
+df.iloc[1:25].index.inferred_freq
+df.iloc[1:35].index.inferred_freq
+df.iloc[1:135].index.inferred_freq
+df.iloc[1:65].index.inferred_freq
+df.iloc[1:55].index.inferred_freq
+df.iloc[1:45].index.inferred_freq
+df.iloc[40:55].index
+df.index.to_series().diff()
+df.index.to_series().diff().value_counts()
+df.index.to_series().diff().value_counts().max()
+df.index.to_series().diff().value_counts().idxmax()
+%history ~0/1-~0/102 -g ls
+ls examples/data
+dfi = pd.read_csv('examples/data/SP500_NOV2019_IDayRVol.csv',index_col=0,parse_dates=True)
+dfi
+dfi.index.to_series().diff().value_counts()
+dfi.index.to_series().diff().value_counts().idxmax()
+dfi.index.to_series().diff().quantile(0.7)
+dfi.index.to_series().diff().value_counts().idxmax() == dfi.index.to_series().diff().quantile(0.7)
+dfi.index.to_series().diff().value_counts().idxmax() == dfi.index.to_series().diff().quantile(0.5)
+dfi.index.to_series().diff().value_counts().idxmax() == dfi.index.to_series().diff().quantile(0.75)
+dfi.index.to_series().diff().value_counts().idxmax() == dfi.index.to_series().diff().quantile(0.9)
+dfi.index.to_series().diff().value_counts().idxmax() == dfi.index.to_series().diff().quantile(0.99)
+dfi.index.to_series().diff().value_counts().idxmax() == dfi.index.to_series().diff().quantile(0.999)
+dfi.index.to_series().diff().quantile(0.999)
+dfi.index.to_series().diff().value_counts()
+df.index.to_series().diff().value_counts()
+df.index.to_series().diff().value_counts().sum()
+df.index.to_series().diff().value_counts().max()
+df.index.to_series().diff().value_counts().max() / df.index.to_series().diff().value_counts().sum()
+5./7
+4.5/7
+df.index.to_series().diff().value_counts()
+df.index.to_series().diff().value_counts().sum()
+198/251.
+6/7
+198/5
+df.index.to_series().diff().value_counts()
+vcs = df.index.to_series().diff().value_counts()
+vcs
+vcs.index
+vcs.index[0]
+vcs.index[0].days()
+vcs.index[0].days
+vcs.index.days
+sum = 0
+for n in vcs.index:
+    sum += n.days*vcs[n]
+sum
+198/sum
+4/6
+4.5/7
+6/7
+vcs
+sum = 0
+for n in vcs.index:
+    sum += min((n.days-1),1)*vcs[n]
+sum
+sum = 0
+for n in vcs.index:
+    sum += max((n.days-1),1)*vcs[n]
+sum
+198/311
+5/7
+4.5/7
+4/7
+198 + (2*44) + (3*8) + 1
+198 / len(vcs.index)
+198 / len(df.index)
+6/7
+5/7
+4/7
+%history ~0 -g ls
+%history ~0/ -g ls
+%history ~0/-~1/ -g ls
+%history ~1/ -g ls
+%history ~2/ -g ls
+%history ~0/-~2/ -g ls
+%history ~0/ ~2/ -g ls
+%history ~0/ ~1/ -g ls
+%history  ~1/ -g ls
+%history  ~1/ -g hist
+%history  ~2/ -g hist
+%history  ~3/ -g hist
+%history  ~3/
+%history  ~2/
+%history  ~6/
+%history  ~6/ -g read
+%history  ~6/
+%history  ~6/ -g import
+%history  ~0/ -g import
+%history  ~1/ -g import
+%history  ~2/ -g import
+%history  ~0/-~2 -g import
+%history  ~0/ ~2 -g import
+%history   ~2 -g import
+%history  ~0/ ~2/ -g import
+%history  ~0/- ~2/ -g import
+%history  ~0/-~2/ -g import
+%history  ~1/
+%history  ~3/
+%history  ~4/
+%history  ~4/ -g import
+%history
+df
+df.index.to_series().diff().value_counts()
+198/252
+df.index[-1] - df.index[0]
+198/364
+4.7
+4/7
+3/7
+tdf = df.iloc[0:100]
+tdf.index.to_series().diff().value_counts()
+len(tdf)
+78/100
+5/7
+4/7
+6/7
+%hist ~0/ -g to_ser
+df.index.to_series().diff().value_counts()
+len(df)
+198/252
+5/7
+tdf
+tdf.index
+import matplotlib.pyplot as plt
+y = tdf.index.values
+x = np.arange(len(tdf)
+)
+import numpy as np
+x = np.arange(len(tdf))
+plt.plot(x,y)
+plt.show()
+198/252
+df.index.to_series().diff().value_counts()
+44/198
+2/7
+1/7
+198/(198+44)
+198/(198+88)
+5/7
+4/7
+4.5/7
+%hist ~0/ -f iphist.txt
+vi iphist.txt
