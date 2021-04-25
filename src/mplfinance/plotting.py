@@ -7,6 +7,7 @@ import pandas as pd
 import numpy  as np
 import copy
 import io
+import os
 import math
 import warnings
 import statistics as stat
@@ -168,7 +169,7 @@ def _valid_plot_kwargs():
                                         'Validator'   : lambda value: isinstance(value,dict) or (isinstance(value,list) and all([isinstance(d,dict) for d in value])) },
  
         'savefig'                   : { 'Default'     : None, 
-                                        'Validator'   : lambda value: isinstance(value,dict) or isinstance(value,str) or isinstance(value, io.BytesIO) },
+                                        'Validator'   : lambda value: isinstance(value,dict) or isinstance(value,str) or isinstance(value, io.BytesIO) or isinstance(value, os.PathLike) },
  
         'block'                     : { 'Default'     : None, 
                                         'Validator'   : lambda value: isinstance(value,bool) },
@@ -942,6 +943,13 @@ def _addplot_columns(panid,panels,ydata,apdict,xdates,config):
         width  = apdict['width'] if apdict['width'] is not None else 1.6*config['_width_config']['line_width']
         alpha  = apdict['alpha']
         ax.plot(xdates,ydata,linestyle=ls,color=color,linewidth=width,alpha=alpha)
+    elif aptype == 'step':
+        stepwhere = apdict['stepwhere']
+        ls = apdict['linestyle']
+        color  = apdict['color']
+        width  = apdict['width'] if apdict['width'] is not None else 1.6*config['_width_config']['line_width']
+        alpha  = apdict['alpha']
+        ax.step(xdates,ydata,where = stepwhere,linestyle=ls,color=color,linewidth=width,alpha=alpha)
     else:
         raise ValueError('addplot type "'+str(aptype)+'" NOT yet supported.')
 
@@ -1028,7 +1036,8 @@ def _auto_secondary_y( panels, panid, ylo, yhi ):
 def _valid_addplot_kwargs():
 
     valid_linestyles = ('-','solid','--','dashed','-.','dashdot','.','dotted',None,' ','')
-    valid_types = ('line','scatter','bar', 'ohlc', 'candle')
+    valid_types = ('line','scatter','bar', 'ohlc', 'candle','step')
+    valid_stepwheres = ('pre','post','mid')
 
     vkwargs = {
         'scatter'     : { 'Default'     : False,
@@ -1088,6 +1097,9 @@ def _valid_addplot_kwargs():
 
         'yscale'      : { 'Default'     : None,
                           'Validator'   : lambda value: _yscale_validator(value) },
+
+        'stepwhere'      : { 'Default'     : 'pre',
+                          'Validator'   : lambda value : value in valid_stepwheres },                  
     }
 
     _validate_vkwargs_dict(vkwargs)
