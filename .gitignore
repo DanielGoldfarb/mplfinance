@@ -7,3 +7,4 @@ __pycache__
 .tox/
 .cache/
 *.code-workspace
+.ipynb_checkpoints
