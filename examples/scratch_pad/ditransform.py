@@ -107,7 +107,6 @@ class DateIlocTransform:
         loc = ((date-d1)/(d2-d1))*(loc2-loc1) + loc1 if d1 != d2 else loc1
         #print('loc1,loc2,loc=',loc1,loc2,loc)
         return loc
-
     
     def to_datetime(self,iloc):
         #self._to_date_series = pd.Series(dtindex.values,index=range(len(dtindex))) 
