@@ -138,6 +138,11 @@ class DateIlocTransform:
 
     @staticmethod
     def timedelta_to_freqabbr(td):
+        '''
+        Convert a Pandas.Timedelta object into a frequency
+        abbreviation string.
+        This method used by `infer_frequency()`.
+        '''
         if not isinstance(td,pd.Timedelta): return None
         hours   = int(round(td.seconds/(60*60)))
         minutes = int(round(td.seconds%(60*60)/60))
@@ -236,6 +241,16 @@ class DateIlocTransform:
 
     @staticmethod
     def time_series_index(start=None,end=None,freq=TimeSeriesFrequency()):
+        '''
+        Generate a Pandas.Datetime index from a TimeSeriesFrequency object.
+        Args:
+            start: start pd.Timestamp object  (default: today)
+            end:   end   pd.Timestamp object  (default: today+1)
+            freq:  TimeSeriesFrequency object (default: TimeSeriesFrquency())
+
+        Returns:
+            Pandas.DatetimeIndex
+        '''
         from pandas.tseries.holiday import USFederalHolidayCalendar
         if not isinstance(freq,TimeSeriesFrequency):
             raise TypeError('`freq` must be of type TimeSeriesFrequency')
