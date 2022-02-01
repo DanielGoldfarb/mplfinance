@@ -28,7 +28,12 @@ import pandas as pd
 import numpy  as np
 
 class TimeSeriesFrequency:
-
+    ''' Class that contains all frequency info needed to generate a Pandas DatetimeIndex
+    for typical trading/market situations.  For example, this calss contains a both
+    "day" frequency and an "itraday" frequency to allow for intraday data (per hour,
+    or per minute, etc) that occurs only on trading days (for example, Mon-Fri).
+    This class also contains an open time and close time for market trading hours.
+    '''
     def __init__(self,dfreq='B',ifreq='H',weekmask=None,open_time='09:30',close_time='16:00'):
         self._dfreq  = dfreq
         self._ifreq  = ifreq
@@ -48,7 +53,7 @@ class TimeSeriesFrequency:
     
     
 class DateIlocTransform:
-    '''Create a transform object that can transform from a Datetime to a DatetimeIndex location, 
+    '''Create a transform object that can transform from a Datetime to an index location, 
     and/or from index location to Datetime.  Requires a Pandas DatetimeIndex upon creation.
     
     This class also contains utilities, that it uses and that you can use, for:
@@ -153,6 +158,16 @@ class DateIlocTransform:
     
     @staticmethod
     def infer_weekmask(ix):
+        '''
+        Infer the weekmask of a pandas.DatetimeIndex
+
+        Args:
+            ix: pandas DatetimeIndex
+
+        Returns
+            weekmask: list of seven bools, corresponding
+                      to Mon,Tue,Wed,Thu,Fri,Sat,Sun.
+        '''
         weekdaydf = pd.DataFrame(dict(date=ix,dayofweek=[d.dayofweek for d in ix]))
         weekdays  = weekdaydf.groupby('dayofweek').count()
         c = weekdays.columns[0]
