@@ -287,6 +287,14 @@ class DateIlocTransform:
             raise TypeError('`freq` must be of type TimeSeriesFrequency')
         if start is None: start = pd.Timestamp.today()
         if end   is None: end   = start + pd.Timedelta(days=1)
+        if isinstance(start,str): start = pd.Timestamp(start)
+        if isinstance(end  ,str): end   = pd.Timestamp(end)
+        if not isinstance(start,pd.Timestamp):
+            raise TypeError('`start` must be of type pd.Timestamp, or type str parseable to pd.Timestamp')
+        if not isinstance(end,pd.Timestamp):
+            raise TypeError('`end` must be of type pd.Timestamp, or type str parseable to pd.Timestamp')
+        if not start < end:
+            raise ValueError('`start` must be less than `end`.')
     
         bday_freq  = freq.dfreq
         iday_freq  = freq.ifreq
