@@ -41,6 +41,26 @@ class TimeSeriesFrequency:
         self._topen  = pd.Timestamp(open_time)
         self._tclose = pd.Timestamp(close_time)
 
+    @property
+    def dfreq(self):
+        return self._dfreq
+
+    @property
+    def ifreq(self):
+        return self._ifreq
+
+    @property
+    def weekmask(self):
+        return self._wmask
+
+    @property
+    def topen(self):
+        return self._topen.time()
+
+    @property
+    def tclose(self):
+        return self._tclose.time()
+
     def __repr__(self):
         s  = self.__class__.__name__
         s += "(d='"+str(self._dfreq)+"'"
@@ -215,10 +235,10 @@ class DateIlocTransform:
         basefreq = vc.idxmax()
         ifreq = None
         if basefreq.days < 1:
-            abbr  = timedelta_to_freqabbr(basefreq)
+            abbr  = DateIlocTransform.timedelta_to_freqabbr(basefreq)
             ifreq = basefreq if abbr is None else abbr
             dfreq = 'B'
-            print(data.iloc[[0,1,2,-3,-2,-1]])
+            print(dts.iloc[[0,1,2,-3,-2,-1]])
         elif basefreq.days == 1:
             dfreq = 'B'
             # infer weekmask:
@@ -236,7 +256,18 @@ class DateIlocTransform:
         if trace:
             print('\nvc(value counts)=')
             print(vc)
+            print('ifreq =',ifreq,'\n')
             print('dfreq =',dfreq,'\n')
+        # __init__(self,dfreq='B',ifreq='H',weekmask=None,open_time='09:30',close_time='16:00'):
+
+    #        if dfreq == 'B':
+    #            wm = DateIlocTransform.infer_weekmask(dts.index)
+    #            if wm.count(True) < 5
+
+
+        # if ifreq is not None, try to determine open_time and close_time.
+        # if span > 1 day and dfreq == 'B' try to determine weekmask
+
         return TimeSeriesFrequency(ifreq=ifreq,dfreq=dfreq)
 
     @staticmethod
@@ -257,18 +288,20 @@ class DateIlocTransform:
         if start is None: start = pd.Timestamp.today()
         if end   is None: end   = start + pd.Timedelta(days=1)
     
-        bday_freq  = freq._dfreq
-        iday_freq  = freq._ifreq
-        weekmask   = freq._wmask
-        open_time  = freq._topen
-        close_time = freq._tclose
+        bday_freq  = freq.dfreq
+        iday_freq  = freq.ifreq
+        weekmask   = freq.weekmask
+        open_time  = freq.topen
+        close_time = freq.tclose
     
         print('start=',start,' end=',end)
         print('bday_freq=',bday_freq,' iday_freq=',iday_freq,' weekmask=',weekmask)
         print('open_time=',open_time,' close_time=',close_time)
     
-        topen  = pd.Timestamp(open_time)
-        tclose = pd.Timestamp(close_time)
+        #topen  = pd.Timestamp(open_time)
+        #tclose = pd.Timestamp(close_time)
+
+        #print('topen=',topen,'tclose=',tclose)
         
         #if bday_freq == 'B':
         #    bday_freq = pd.offsets.CustomBusinessDay(calendar=USFederalHolidayCalendar())
@@ -278,10 +311,26 @@ class DateIlocTransform:
             return dates
     
         for d in dates:
-            if d.date() == start.date(): topen = start
-            d1     = d.replace(hour=topen.hour,minute=topen.minute)
-            if d.date() == end.date(): tclose = end
-            d2     = d.replace(hour=tclose.hour,minute=tclose.minute)
+            topen = open_time
+            if d.date() == start.date():
+                if start.time() >= open_time and start.time() <= close_time:
+                    topen = start.time()
+                elif start.time() > close_time:
+                    continue
+
+            d1 = d.replace(hour=topen.hour,minute=topen.minute)
+
+            tclose = freq.tclose
+            if d.date() == end.date():
+                if end.time() >= open_time and end.time() <= close_time:
+                    tclose = end.time()
+                elif end.time() < open_time:
+                    continue
+
+            d2 = d.replace(hour=tclose.hour,minute=tclose.minute)
+
+            print('topen=',topen,'tclose=',tclose)
+            print('d1=',d1,'d2=',d2,'iday_freq=',iday_freq)
             daily.append(pd.date_range(d1,d2,freq=iday_freq))
        
         index = daily[0].union_many(daily[1:])
