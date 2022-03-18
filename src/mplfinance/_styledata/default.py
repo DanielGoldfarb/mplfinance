@@ -1,5 +1,5 @@
 style = dict(style_name    = 'default',
-             base_mpl_style= 'seaborn-darkgrid', 
+             base_mpl_style= 'seaborn0.8-darkgrid', 
              marketcolors  = {'candle'  : {'up':'w', 'down':'k'},
                               'edge'    : {'up':'k', 'down':'k'},
                               'wick'    : {'up':'k', 'down':'k'},

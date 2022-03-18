@@ -1,5 +1,5 @@
 style = {   'style_name': 'kenan',
-            'base_mpl_style': 'seaborn-darkgrid',
+            'base_mpl_style': 'seaborn0.8-darkgrid',
             'marketcolors': {   'candle': {'up': 'k', 'down': 'r'},
                                 'edge': {'up': 'k', 'down': 'r'},
                                 'wick': {'up': 'k', 'down': 'r'},
