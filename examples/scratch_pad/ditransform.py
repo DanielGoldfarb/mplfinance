@@ -208,7 +208,17 @@ class DateIlocTransform:
         return weekmask
     
     @staticmethod
-    def infer_frequency(data,trace=False):
+    def infer_open_close_times(ix):
+        '''
+        Infer the open and close times of intraday data
+        '''
+#       TODO: Fill out this function, and use it
+#       TODO: to create TSFreq at bottom of infer_frequency!!!
+        return ('09:30:00','16:00:00')
+
+
+    @staticmethod
+    def infer_frequency(data,trace=True):
         '''
         Infer the frequency of a pandas.DatetimeIndex
         even if that DatetimeIndex contains some gaps.
@@ -238,11 +248,17 @@ class DateIlocTransform:
         vc = diff.value_counts()
         basefreq = vc.idxmax()
         ifreq = None
+        if trace:
+            print('basefreq=',basefreq)
+            print('basefreq.days=',basefreq.days)
+            mask = DateIlocTransform.infer_weekmask(dts.index)
+            print('weekmask=',mask)
         if basefreq.days < 1:
             abbr  = DateIlocTransform.timedelta_to_freqabbr(basefreq)
             ifreq = basefreq if abbr is None else abbr
             dfreq = 'B'
             print(dts.iloc[[0,1,2,-3,-2,-1]])
+            mask = DateIlocTransform.infer_weekmask(dts.index)
         elif basefreq.days == 1:
             dfreq = 'B'
             # infer weekmask:
@@ -272,7 +288,7 @@ class DateIlocTransform:
         # if ifreq is not None, try to determine open_time and close_time.
         # if span > 1 day and dfreq == 'B' try to determine weekmask
 
-        return TimeSeriesFrequency(ifreq=ifreq,dfreq=dfreq)
+        return TimeSeriesFrequency(ifreq=ifreq,dfreq=dfreq,weekmask=mask)
 
     @staticmethod
     def time_series_index(start=None,end=None,freq=TimeSeriesFrequency()):
