@@ -5,16 +5,16 @@
 # 
 # #### All uses are for `show_nontrading=False` only:
 # 
-# - `.to_date()` &nbsp; location *to* date: &nbsp; for tick label formatting.
-# - `.to_iloc()` &nbsp; date *to* location: &nbsp; for `xticks` placement.
-# - `.to_iloc()` &nbsp; date *to* location: &nbsp; for `xlim` placement.
-# - `.to_iloc()` &nbsp; date *to* location: &nbsp; for `lines` placement.
+# - `.to_date()` - location *to* date: for tick label formatting.
+# - `.to_iloc()` - date *to* location: for `xticks` placement.
+# - `.to_iloc()` - date *to* location: for `xlim` placement.
+# - `.to_iloc()` - date *to* location: for `lines` placement.
 # 
 # ---
 # 
 # - It seems to me that  
 #   - **interpolation** may be better using the actual datetime series (rather than the linear formula), whereas 
-#   - **extrapolation** *will require* the linear formula.
+#   - **extrapolation** *may require* the linear formula.
 #     - Or for "known" cases may be able to use **date calculations**, for example:
 #       - quartile(0.65) == quartile(0.50) == quartile(0.35) == "known" frequency.
 #       - intraday with consistent trading hours in data
@@ -29,7 +29,7 @@ import numpy  as np
 
 class TimeSeriesFrequency:
     ''' Class that contains all frequency info needed to generate a Pandas DatetimeIndex
-    for typical trading/market situations.  For example, this calss contains a both
+    for typical trading/market situations.  For example, this class contains a both
     "day" frequency and an "itraday" frequency to allow for intraday data (per hour,
     or per minute, etc) that occurs only on trading days (for example, Mon-Fri).
     This class also contains an open time and close time for market trading hours.
@@ -74,11 +74,12 @@ class TimeSeriesFrequency:
     
 class DateIlocTransform:
     '''Create a transform object that can transform from a Datetime to an index location, 
-    and/or from index location to Datetime.  Requires a Pandas DatetimeIndex upon creation.
+    and/or from index location to Datetime.  
+    - Requires a Pandas DatetimeIndex object (as input) upon creation.
     
     This class also contains utilities, that it uses and that you can use, for:
-    - generating a datetime index given a TimeSeriesFrequency object
-    - inferring the TimeSeriesFrequency of a pandas datetime index
+    - Generating a Pandas DatetimeIndex given a TimeSeriesFrequency object
+    - Inferring the TimeSeriesFrequency of a Pandas DatetimeIndex object
     
     If `date` does not exactly match a date in the series then interpolate between two dates.
     If `date` is outside the range of dates in the series, then extrapolate.
@@ -97,8 +98,11 @@ class DateIlocTransform:
 
     The user optionally can call `.set_extrapolation_limits()` which will trigger frequency inference
     and extrapolation of the DatetimeIndex (or, if the frequency cannot be inferred, trigger the least 
-    squares linear fit described above).  The user can than transform data within the newly specified 
-    extrapolation limits
+    squares linear fit mentioned above).  The user can than transform data within the newly specified 
+    extrapolation limits.
+
+    Alternatively, maybe we don't force the user to expand the extrapolation limits, but automatically
+    expand them if a date is requested that requires us to go outside the current limits.
     '''
     
     def __init__(self,dtindex):
