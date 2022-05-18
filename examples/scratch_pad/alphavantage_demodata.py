@@ -25,6 +25,8 @@ for col in df.columns:
 
 df = df.iloc[::-1]  # reverse data (make oldest first in df)
 
+#df.to_csv('alphavantage_demodata.csv')
+
 dfs = df.iloc[0:180]
 
 print('head=')

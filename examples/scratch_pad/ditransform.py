@@ -319,6 +319,13 @@ class DateIlocTransform:
         bday_freq  = freq.dfreq
         iday_freq  = freq.ifreq
         weekmask   = freq.weekmask
+        if weekmask is not None:
+            if weekmask == [True,True,True,True,True,False,False]:
+                if bday_freq != 'B':
+                    raise ValueError('Weekmask says bday_freq should be "B"')
+                weekmask = None
+            else:
+                bday_freq = 'C'
         open_time  = freq.topen
         close_time = freq.tclose
     
