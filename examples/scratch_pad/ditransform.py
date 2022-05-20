@@ -26,6 +26,7 @@
 
 import pandas as pd
 import numpy  as np
+import datetime
 
 class TimeSeriesFrequency:
     ''' Class that contains all frequency info needed to generate a Pandas DatetimeIndex
@@ -38,8 +39,8 @@ class TimeSeriesFrequency:
         self._dfreq  = dfreq
         self._ifreq  = ifreq
         self._wmask  = weekmask
-        self._topen  = pd.Timestamp(open_time)
-        self._tclose = pd.Timestamp(close_time)
+        self._topen  = pd.Timestamp(str(open_time))
+        self._tclose = pd.Timestamp(str(close_time))
 
     @property
     def dfreq(self):
@@ -208,14 +209,37 @@ class DateIlocTransform:
         return weekmask
     
     @staticmethod
-    def infer_open_close_times(ix):
+    def infer_open_close(dts):
         '''
         Infer the open and close times of intraday data
         '''
-#       TODO: Fill out this function, and use it
-#       TODO: to create TSFreq at bottom of infer_frequency!!!
-        return ('09:30:00','16:00:00')
+       #if isinstance(ix,(pd.core.frame.DataFrame,pd.core.series.Series)):
+       #    if not isinstance(data.index,pd.core.indexes.datetimes.DatetimeIndex):
+       #        raise TypeError('DataFrame or Series must have DatetimeIndex to infer frequency')
+       #    dts = ix.index.to_series()
+       #elif isinstance(ix,pd.core.indexes.datetimes.DatetimeIndex):
+       #    dts = ix.to_series()
+       #else:
+       #    raise TypeError('Input must be DataFrame, Series, or DatetimeIndex')
 
+        dates = list(set([ts.date() for ts in dts.index]))
+        dates.sort()
+
+        start_times = []
+        end_times   = []
+        for d in dates:
+            one_day = dts[d:d+datetime.timedelta(days=1)]
+            start_times.append(one_day[0].time())
+            end_times.append(one_day[-1].time())
+
+        start_times = pd.Series(start_times)
+        end_times = pd.Series(end_times)
+    
+        #print('start_times(vc)=',start_times.value_counts())
+        #print('end_times(vc)=',end_times.value_counts())
+        o = start_times.value_counts().idxmax()
+        c = end_times.value_counts().idxmax()
+        return (o,c)
 
     @staticmethod
     def infer_frequency(data,trace=True):
@@ -231,7 +255,7 @@ class DateIlocTransform:
         Returns:
             freq:  Inferred frequency of type `class TimeSeriesFrequency`
         '''
-        if isinstance(data,(pd.core.frame.DataFrame,pd.core.frame.DataFrame)):
+        if isinstance(data,(pd.core.frame.DataFrame,pd.core.series.Series)):
             if not isinstance(data.index,pd.core.indexes.datetimes.DatetimeIndex):
                 raise TypeError('DataFrame or Series must have DatetimeIndex to infer frequency')
             dts = data.index.to_series()
@@ -253,12 +277,15 @@ class DateIlocTransform:
             print('basefreq.days=',basefreq.days)
             mask = DateIlocTransform.infer_weekmask(dts.index)
             print('weekmask=',mask)
+        o = datetime.time(9,30)
+        c = datetime.time(16)
         if basefreq.days < 1:
             abbr  = DateIlocTransform.timedelta_to_freqabbr(basefreq)
             ifreq = basefreq if abbr is None else abbr
             dfreq = 'B'
             print(dts.iloc[[0,1,2,-3,-2,-1]])
             mask = DateIlocTransform.infer_weekmask(dts.index)
+            o,c  = DateIlocTransform.infer_open_close(dts)
         elif basefreq.days == 1:
             dfreq = 'B'
             # infer weekmask:
@@ -275,7 +302,8 @@ class DateIlocTransform:
             dfreq = None
         if trace:
             print('\nvc(value counts)=')
-            print(vc)
+            n = min(len(vc),10)
+            print(vc.head(n))
             print('ifreq =',ifreq,'\n')
             print('dfreq =',dfreq,'\n')
         # __init__(self,dfreq='B',ifreq='H',weekmask=None,open_time='09:30',close_time='16:00'):
@@ -288,7 +316,8 @@ class DateIlocTransform:
         # if ifreq is not None, try to determine open_time and close_time.
         # if span > 1 day and dfreq == 'B' try to determine weekmask
 
-        return TimeSeriesFrequency(ifreq=ifreq,dfreq=dfreq,weekmask=mask)
+        return TimeSeriesFrequency(ifreq=ifreq,dfreq=dfreq,weekmask=mask,
+                                   open_time=o,close_time=c)
 
     @staticmethod
     def time_series_index(start=None,end=None,freq=TimeSeriesFrequency()):
@@ -364,8 +393,8 @@ class DateIlocTransform:
 
             d2 = d.replace(hour=tclose.hour,minute=tclose.minute)
 
-            print('topen=',topen,'tclose=',tclose)
-            print('d1=',d1,'d2=',d2,'iday_freq=',iday_freq)
+            #print('topen=',topen,'tclose=',tclose)
+            #print('d1=',d1,'d2=',d2,'iday_freq=',iday_freq)
             daily.append(pd.date_range(d1,d2,freq=iday_freq))
        
         index = daily[0].union_many(daily[1:])
