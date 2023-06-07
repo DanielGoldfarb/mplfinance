@@ -624,6 +624,7 @@ def plot( data, **kwargs ):
         elif ptype == 'pnf':
             retdict['pnf_dates'    ] = mdates.num2date(pnf_mdates)
             retdict['pnf_values'   ] = pnf_values
+            retdict['pnf_detail'   ] = pnf_results['pnf_detail']
             retdict['pnf_size'     ] = pnf_results['pnf_boxsize']
             retdict['pnf_volumes'  ] = volumes[:len(pnf_values)] if config['volume'] else None
         if config['mav'] is not None and ptype != 'pnf':
