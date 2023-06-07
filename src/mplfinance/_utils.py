@@ -1333,6 +1333,9 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
     # O Boxes: Round up to boxsize:
     indf.loc[:,'OBox'] = [(int(round_to((x+(0.5*boxsize)),boxsize)/boxsize))*boxsize for x in Oprices]
 
+    print('indf.head(20)=')
+    print(indf.head(20))
+
     # Initialize First Column:
 
     # There are a number of ways to decide whether the first column is up (X) or down (O).
@@ -1360,7 +1363,9 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
     xo
     pnf = {}
     pnf[d0] = column
-    
+
+    print('column=',column)
+
     # HERE STARTS THE MAIN LOOP:
     
     column_count   = 1
@@ -1371,50 +1376,56 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
         if xo == 'X':
             box = indf.XBox[d]
             reverse = current_level - 3*boxsize        
+            print('xo="X",d=',d,'box=',box,'current_level=',current_level,'reverse=',reverse)
             if box > current_level:
-               #print(xo,d,'curlev=',current_level,'box=',box,'num=',num)
-               #print(xo,d,'current_column.1=',current_column)
                 num = int(round((box-current_level)/boxsize))
+                #print(xo,d,'curlev=',current_level,'box=',box,'num=',num)
+                #print(xo,d,'current_column.1=',current_column)
                 for jj in range(1,num+1):
-                    current_column.append(current_level+(jj*boxsize))
-               #print(xo,d,'current_column.2=',current_column)
+                    boxval = current_level+(jj*boxsize)
+                    current_column.append(boxval)
+                print(xo,d,'current_column.2=',current_column)
             elif indf.OBox[d] <= reverse:
                 top = current_level - boxsize
                 box = indf.OBox[d]
                 num = int(round((top-box)/boxsize))
                 new_column = [top]
                 for jj in range(1,num+1):
-                    new_column.append(top-(jj*boxsize))
+                    boxval = top-(jj*boxsize)
+                    new_column.append(boxval)
                 pnf[d] = new_column
                 xo = 'O'
                 current_column = new_column
                 column_count += 1
+                print('reverse: X->O')
         else: # xo = 'O'
             box = indf.OBox[d]
-            #print('d=',d,'box=',box,'current_level=',current_level)
             reverse = current_level + 3*boxsize
+            print('xo="O",d=',d,'box=',box,'current_level=',current_level,'reverse=',reverse)
             if round_to(box,1.0*boxsize) < current_level:
-               #print(xo,d,'curlev=',current_level,'box=',box,'num=',num)
-               #print(xo,d,'current_column.1=',current_column)
                 num = int(round((current_level-box)/boxsize))
+                #print(xo,d,'curlev=',current_level,'box=',box,'num=',num)
+                #print(xo,d,'current_column.1=',current_column)
                 for jj in range(1,num+1):
-                    current_column.append(current_level-(jj*boxsize))
-               #print(xo,d,'current_column.2=',current_column)
+                    boxval = current_level-(jj*boxsize)
+                    current_column.append(boxval)
+                print(xo,d,'current_column.2=',current_column)
             elif indf.XBox[d] >= reverse:
                 bot = current_level + boxsize
                 box = indf.XBox[d]
                 num = int(round((box-bot)/boxsize))
                 new_column = [bot]
                 for jj in range(1,num+1):
-                    new_column.append(bot+(jj*boxsize))
+                    boxval = bot+(jj*boxsize)
+                    new_column.append(boxval)
                 pnf[d] = new_column
                 xo = 'X'
                 current_column = new_column
                 column_count += 1
-        #print('d=',d,'reverse=',reverse)
-        #if column_count > 4:
-        #    break
-    return pnf
+                print('reverse: O->X')
+        if column_count > 4:
+            break
+    return pnf, None
 
 def _construct_pnf_scatter(ax,ptype,dates,xdates,opens,highs,lows,closes,volumes,config,style):
     """Represent the price change with Xs and Os
@@ -1494,7 +1505,14 @@ def _construct_pnf_scatter(ax,ptype,dates,xdates,opens,highs,lows,closes,volumes
         raise ValueError("Specified reversal must be an integer in the range [1,9]")
 
 
-    pnfd = _pnf_calculator(df,boxsize=box_size,reverse=reversal,method=method)
+    pnfd, pnf_detail = _pnf_calculator(df,boxsize=box_size,reverse=reversal,method=method)
+
+    import pprint
+    pp = pprint.PrettyPrinter()
+    print('_pnf_calculator() returned pnfd=')
+    pp.pprint(pnfd)
+    print('and pnf_detail=')
+    pp.pprint(pnf_detail)
 
     yvals = [y for key in pnfd.keys() for y in pnfd[key] ]
 
@@ -1583,6 +1601,7 @@ def _construct_pnf_scatter(ax,ptype,dates,xdates,opens,highs,lows,closes,volumes
     pnf_results = dict(pnf_volumes=pnf_volumes,
                        pnf_ylimits=(ylim_bot,ylim_top),
                        pnf_values=pnfd,
+                       pnf_newvalues=pnf_detail,
                        pnf_df=df,
                        pnf_boxsize=box_size,
                        pnf_xdates=xdates)
