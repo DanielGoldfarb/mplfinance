@@ -1363,16 +1363,20 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
     xo
     pnf = {}
     pnf[d0] = column
-
     print('column=',column)
+
+    pnf_dates = {}
+    pnf_dates[d0] = [d0]
 
     # HERE STARTS THE MAIN LOOP:
     
     column_count   = 1
     current_column = pnf[d0]
+    current_dates  = pnf_dates[d0]
     for d in indf.index[1:]:
         current_level = current_column[-1]
         new_column    = []
+        new_dates     = []
         if xo == 'X':
             box = indf.XBox[d]
             reverse = current_level - 3*boxsize        
@@ -1384,18 +1388,23 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
                 for jj in range(1,num+1):
                     boxval = current_level+(jj*boxsize)
                     current_column.append(boxval)
+                    current_dates.append(d)
                 print(xo,d,'current_column.2=',current_column)
             elif indf.OBox[d] <= reverse:
                 top = current_level - boxsize
                 box = indf.OBox[d]
                 num = int(round((top-box)/boxsize))
                 new_column = [top]
+                new_dates  = [d]
                 for jj in range(1,num+1):
                     boxval = top-(jj*boxsize)
                     new_column.append(boxval)
+                    new_dates.append(d)
                 pnf[d] = new_column
+                pnf_dates[d] = new_dates
                 xo = 'O'
                 current_column = new_column
+                current_dates  = new_dates
                 column_count += 1
                 print('reverse: X->O')
         else: # xo = 'O'
@@ -1409,23 +1418,28 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
                 for jj in range(1,num+1):
                     boxval = current_level-(jj*boxsize)
                     current_column.append(boxval)
+                    current_dates.append(d)
                 print(xo,d,'current_column.2=',current_column)
             elif indf.XBox[d] >= reverse:
                 bot = current_level + boxsize
                 box = indf.XBox[d]
                 num = int(round((box-bot)/boxsize))
                 new_column = [bot]
+                new_dates  = [d]
                 for jj in range(1,num+1):
                     boxval = bot+(jj*boxsize)
                     new_column.append(boxval)
+                    new_dates.append(d)
                 pnf[d] = new_column
+                pnf_dates[d] = new_dates
                 xo = 'X'
                 current_column = new_column
+                current_dates = new_dates
                 column_count += 1
                 print('reverse: O->X')
         if column_count > 4:
             break
-    return pnf, None
+    return pnf, pnf_dates
 
 def _construct_pnf_scatter(ax,ptype,dates,xdates,opens,highs,lows,closes,volumes,config,style):
     """Represent the price change with Xs and Os
