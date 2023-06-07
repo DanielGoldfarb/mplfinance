@@ -1433,8 +1433,8 @@ def _pnf_calculator(indf,boxsize,reverse=3,method='hilo'):
                 current_detail = new_detail
                 column_count += 1
                 #print('reverse: O->X')
-        if column_count > 4:
-            break
+        #if column_count > 4:
+        #    break
     return pnf, pnf_detail
 
 def _construct_pnf_scatter(ax,ptype,dates,xdates,opens,highs,lows,closes,volumes,config,style):
@@ -1517,12 +1517,12 @@ def _construct_pnf_scatter(ax,ptype,dates,xdates,opens,highs,lows,closes,volumes
 
     pnfd, pnf_detail = _pnf_calculator(df,boxsize=box_size,reverse=reversal,method=method)
 
-    import pprint
-    pp = pprint.PrettyPrinter()
-    print('_pnf_calculator() returned pnfd=')
-    pp.pprint(pnfd)
-    print('and pnf_detail=')
-    pp.pprint(pnf_detail)
+    #import pprint
+    #pp = pprint.PrettyPrinter()
+    #print('_pnf_calculator() returned pnfd=')
+    #pp.pprint(pnfd)
+    #print('and pnf_detail=')
+    #pp.pprint(pnf_detail)
 
     yvals = [y for key in pnfd.keys() for y in pnfd[key] ]
 
